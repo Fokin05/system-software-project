@@ -4,29 +4,32 @@
     stages {
         stage('Checkout') {
             steps {
-                bat 'echo "📥 Загружаем код из GitHub..."'
-                git branch: 'main', url: 'https://github.com/Fokin05/system-software-project.git'
+                echo '📥 Checking out code...'
+                checkout scm
+            }
+        }
+        
+        stage('Info') {
+            steps {
+                sh 'echo "System info:"'
+                sh 'uname -a'
+                sh 'docker --version'
+                sh 'git --version'
             }
         }
         
         stage('Build') {
             steps {
-                bat 'echo "🏗️ Собираем Docker образ..."'
-                bat 'docker build -t system-software-app:jenkins .'
+                sh 'echo "🏗️ Building Docker image..."'
+                sh 'docker build -t system-software-app:jenkins .'
             }
         }
         
-        stage('Test') {
+        stage('Verify') {
             steps {
-                bat 'echo "🧪 Тестируем приложение..."'
-                bat 'docker images | findstr "system-software-app"'
+                sh 'echo "✅ Verifying image..."'
+                sh 'docker images | grep system-software-app'
             }
-        }
-    }
-    
-    post {
-        always {
-            bat 'echo "✅ Сборка завершена!"'
         }
     }
 }
